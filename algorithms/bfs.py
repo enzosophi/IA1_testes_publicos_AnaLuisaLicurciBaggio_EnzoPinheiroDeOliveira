@@ -1,6 +1,6 @@
 from collections import deque
 
-"""Este é o bfs"""
+"""Este é o bfs - Código de busca em largura (Breadth-First Search) para grafos."""
 
 
 class Grafo:
