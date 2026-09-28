@@ -19,13 +19,16 @@ class Grafo:
 
     def bfs(self, inicio, objetivo):
         visitados = set()
-        fila = deque([inicio])
+        # A fila precisa guardar o caminho completo (uma lista de vértices)
+        fila = deque([[inicio]])
+        visitados.add(inicio)
 
         while fila:
             caminho = fila.popleft()
-            atual = caminho[-1]
+            atual = caminho[-1]  # O nó atual é o último elemento do caminho
 
-            if caminho == objetivo:
+            # Compara o vértice atual com o objetivo
+            if atual == objetivo:
                 return caminho
 
             for vizinho in self.grafo.get(atual, []):
