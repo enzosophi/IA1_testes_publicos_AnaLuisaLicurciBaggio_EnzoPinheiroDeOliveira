@@ -13,19 +13,20 @@ class SolicitaBusca:
     max_tamanho_fronteira: int= 20_000
     tempo_limite_ms: float = 2_000.0
 
+# vai verificar basicamente a intergidade de tal arquivo antes de ser executada a busca
 def valida_mapa(caminho_mapa: str) -> Tuple[bool, str,list[str]]:
     """a integridade do arquivo do mapa é considerada aplicada se o arquivo existir
     se o mapa não estiver vazio e suas linhas tiverem a mesma largura, se conter exatamente um inicio S e um objetivo G e se os caracteres forem validos (como S, G, ., #, 1-9)"""
 
     if not os.path.exists(caminho_mapa):
         return False, f"arquivo nao encontrado: {caminho_mapa}", []
-
-        try:
-            with open(caminho_mapa, "r", encoding="utf-8") as arquivo:
+        #vai tentar abrir e ler as linhas do arquivo
+    try:
+        with open(caminho_mapa, "r", encoding="utf-8") as arquivo:
                 linhas = [linha.rstrip("\r\n") for linha in arquivo.readlines()]
-        except Exception as erro:
-            return False, f"erro ao ler o arquivo: {erro}", []
-
+    except Exception as erro:
+        return False, f"erro ao ler o arquivo: {erro}", []
+    # mapa está vazio ou não
     if not linhas or all(len(linha)==0 for linha in linhas):
         return False, "O mapa esta vazio",[]
 
@@ -33,10 +34,11 @@ def valida_mapa(caminho_mapa: str) -> Tuple[bool, str,list[str]]:
     qtd_inicio = 0
     qtd_objetivo = 0
     caracteres_validos = set("SG.#123456789")
-
+    #percorre linha a linha e caractere pra poder fazer as validacoes de dimensoes e conteudo
     for indice_linha, linha in enumerate(linhas):
         if len(linha) != larg_esperada:
             return False, f"A linha {indice_linha} nao possui uma largura compativel",[]
+        #vai validar se o caracter pertence ao vocabulario que foi proposto no projeto
         for caracter in linha:
             if caracter not in caracteres_validos:
                 return False, f"caracter invalido '{caracter}'enconotrado no mapa", []
@@ -44,10 +46,11 @@ def valida_mapa(caminho_mapa: str) -> Tuple[bool, str,list[str]]:
                 qtd_inicio += 1
             elif caracter == "G":
                 qtd_objetivo += 1
-
+    #ponto de inicio S e ponto objetivo G
     if qtd_inicio != 1:
         return False, f"o mapa precisa ter exatamente um S (encontrados{qtd_inicio})",[]
     if qtd_objetivo != 1:
         return False, f"o mapa precisa ter exatamente um G (encontados{qtd_objetivod})",[]
-
+    #retorna true a representacao da grade
     return True, "", linhas
+
