@@ -8,6 +8,7 @@ from harness.validator import ValidadorResultado
 
 @dataclass
 class ResultadoBusca:
+    #contrato retornado pelo harness
     status: str
     found: bool
     path: List[Any]
@@ -19,19 +20,19 @@ class ResultadoBusca:
     reason: str = ""
 
 class SearchHarness:
-
+    #vai orquestar autorizacao, execucao, limites e auditoria do harness
     def __init__(self, catalogo_busca: Optional[Dict[str, Any]] = None) -> None:
         self.politica = PoliticaHarness()
         self.validador = ValidadorResultado()
         self.auditoria = HarnessAuditoria()
         self.catalogo_busca = catalogo_busca or {}
-
+    #vai registrar uma funcao de busca
     def registrar_algoritmo(self, nome: str, funcao_busca: Any) -> None:
         self.catalogo_busca[nome]= funcao_busca
-
+    #vai aplicar a autorizacao e a solicitacao
     def autorizar(self, solicitacao: SolicitaBusca) -> Tuple[bool, str]:
         return self.politica.autorizar(solicitacao)
-
+    #vai autorizar, executar, validar e auditar o fluxo do harness
     def executar(self, solicitacao: SolicitaBusca) -> ResultadoBusca:
         inicio_tempo = time.perf_counter()
 
@@ -48,7 +49,7 @@ class SearchHarness:
                 execution_time_ms=0.0,
                 reason=motivo_autorizacao,
             )
-
+            #registra a recusa no processo da auditoria e retorna deny
             self.auditoria.registrar(
                 solicitacao=asdict(solicitacao),
                 status_decisao="DENY",
@@ -56,7 +57,7 @@ class SearchHarness:
                 resultado_busca=asdict(resultado_negado),
             )
             return resultado_negado
-
+        #carrega e valida o arquivo mapa
         valido, motivo_mapa, grade = validar_mapa(solicitacao.id_mapa)
         if not valido:
             resultado_erro_mapa = ResultadoBusca(
@@ -70,7 +71,7 @@ class SearchHarness:
                 execution_time_ms=0.0,
                 reason=motivo_mapa,
             )
-
+            #registro do erro - retorna deny
             self.auditoria.registrar(
                 solicitacao=asdict(solicitacao),
                 status_decisao="DENY",
@@ -78,7 +79,7 @@ class SearchHarness:
                 resultado_busca=asdict(resultado_erro_mapa),
             )
             return resultado_erro_mapa
-        
+        #localiza o algoritmo no catalogo 
         funcao_algoritmo = self.catalogo.busca.get(solicitacao.algoritmo)
         if not funcao_algoritmo:
             resultado_ausente = ResultadoBusca(
@@ -93,7 +94,7 @@ class SearchHarness:
                 reason=f"algoritmo '{solicitacao.algoritmo}' não impplementado no catalogo",
             )
             return resultado_ausente
-
+        #vai tratar falhas e operações chamando a função do alg
         try:
             resposta_busca = funcao_algoritmo(
                 grade=grade,
@@ -135,7 +136,7 @@ class SearchHarness:
                 execution_time_ms=round(tempo_execucao_ms, 4),
                 reason=motivo_final,
             )
-
+        #tratamento de excecoes
         except Exception as erro:
             fim_tempo = time.perf_counter()
             tempo_execucao_ms = (fim_tempo - inicio_tempo)*1000.0
