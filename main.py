@@ -3,7 +3,7 @@ from agent.controller import AgenteControlador
 from harness.executor import SearchHarness
 
 #import dos algoritmos
-from algorithms.bfs import bfs
+from algorithms.bfs import Grafo
 from algorithms.ucs import uniform_cost_search
 from algorithms.greedy import greedy_search
 from algorithms.astrar import a_star
@@ -13,7 +13,7 @@ def cria_configura_harness() -> SearchHarness:
     #registra as funcoes de busca no catálogo
     harness = SearchHarness()
 
-    harness.registrar_algoritmo("bfs", bfs)
+    harness.registrar_algoritmo("bfs", Grafo.bfs)
     harness.registrar_algoritmo("ucs", uniform_cost_search)
     harness.registrar_algoritmo("greedy", greedy_search)
     harness.registrar_algoritmo("astar", a_star)
