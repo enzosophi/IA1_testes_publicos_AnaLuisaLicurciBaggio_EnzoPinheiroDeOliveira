@@ -25,11 +25,17 @@ class HarnessAuditoria:
         resultado_busca: Dict[str, Any],
     ) -> None:
 
-    #vai registar a imteração no log de auditoria
-    registro = RegistroAuditoria(
-        solicitacao=solicitacao,
-        status_decisao=status_decisao,
-        motivo=motivo,
-        resultado_busca=resultado_busca
-    )
-    self._registros.append(registro)
+        #vai registar a imteração no log de auditoria
+        registro = RegistroAuditoria(
+            solicitacao=solicitacao,
+            status_decisao=status_decisao,
+            motivo=motivo,
+            resultado_busca=resultado_busca
+        )
+        self._registros.append(registro)
+
+    def obter_historico(self) -> List[Dict[str, Any]]:
+        return [asdict(r) for r in self._registros]
+
+    def exportar_json(self) -> str:
+        return json.dumps(self.obter_historico(), indent=2, ensure_ascii=False)
