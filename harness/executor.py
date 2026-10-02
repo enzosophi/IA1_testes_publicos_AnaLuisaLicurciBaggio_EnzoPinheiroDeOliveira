@@ -95,11 +95,67 @@ class SearchHarness:
             return resultado_ausente
 
         try:
-            resposta_busca = funcao_algoritmo{
+            resposta_busca = funcao_algoritmo(
                 grade=grade,
                 heuristica=solicitacao.heuristica,
                 largura_feixe=solicitacao.largura_feixe,
                 max_expansoes=solicitacao.max_expansoes,
                 max_tamanho_fronteira=solicitacao.max_tamanho_fronteira,
                 tempo_limite_ms=solicitacao.tempo_limite_ms,
-            }
+            )
+
+            fim_tempo = time.perf_counter()
+            tempo_execucao_ms = (fim_tempo - inicio_tempo)*1000.0
+
+            status_final = resposta_busca.get("status", "ALLOW")
+            motivo_final = resposta_busca.get("reason", "busca concluida")
+            caminho = resposta_busca.get("path", [])
+            custo = float(resposta_busca.get("path_cost", 0.0))
+            encontrou = resposta_busca.get("found", False)
+
+            if status_final == "ALLOW" and encontrou:
+                caminho_valido, motivo_validacao = self.validador.validar_caminho(
+                    grade, caminho, custo
+                )
+                if not caminho_valido:
+                status_final = "ERROR"
+                motivo_final = f"falaha na validacao do caminho: {motivo_validacao}"
+                encontrou = False
+                caminho = []
+                custo = 0.0
+
+            resultado = ResultadoBusca(
+                status=status_final,
+                found=encontrou,
+                path=caminho,
+                path_cost=custo,
+                expanded_nodes=int(resposta_busca.get("expanded_nodes", 0)),
+                generated_nodes=int(resposta_busca.get("generated_nodes", 0)),
+                max_frontier_size=int(resposta_busca.get("max_frontier_size", 0)),
+                execution_time_ms=round(tempo_execucao_ms, 4),
+                reason=motivo_final,
+            )
+
+        except Exception as erro:
+            fim_tempo = time.perf_counter()
+            tempo_execucao_ms = (fim_tempo - inicio_tempo)*1000.0
+            resultado = ResultadoBusca(
+                status="ERROR",
+                found=False,
+                path=[],
+                path_cost=0.0,
+                expanded_nodes=0,
+                generated_nodes=0,
+                max_frontier_size=0,
+                execution_time_ms=round(tempo_execucao_ms, 4),
+                reason=f"excecao não tratada durante a busca: {str(erro)}",
+            )
+
+        self.auditoria.registrar(
+            solicitacao=asdict(solicitacao),
+            status_decisao=resultado.status,
+            motivo= resultado.reason,
+            resultado_busca = asdict(resultado),
+        )
+
+        return resultado
