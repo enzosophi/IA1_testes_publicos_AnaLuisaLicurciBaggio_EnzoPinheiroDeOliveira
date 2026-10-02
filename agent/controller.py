@@ -75,3 +75,16 @@ class AgenteControlador:
                 self.historico_mensagens.append(
                     {"role": "tool", "content": conteudo_observacao}
                 )
+
+                if observacao_resultado.status == "ALLOW" and observacao_resultado.found:
+                    return{
+                        "status": "SUCESSO",
+                        "passos_executados": passo + 1,
+                        "resultado_final": conteudo_observacao,
+                        "historico": self.historico_mensagens,
+                    }
+        return{
+            "status": "LIMITE_PASSOS_ALCANCADO",
+            "passos_executados": max_passos,
+            "historico": self.historico_mensagens,
+        }
