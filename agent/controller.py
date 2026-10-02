@@ -16,7 +16,7 @@ class AgenteControlador:
             for msg in self.historico_mensagens
             if "content" in msg and isinstance(msg["content"], dict)
         }
-
+        #escolhe o prox algoritmo da lista com as opções que ainda nao foram testadas
         for alg in algoritmos_para_testar:
             if alg not in algoritnos_testados:
                 heuristica = "manhattan" if alg in {"greedy", "astar", "beam"} else None
@@ -48,7 +48,7 @@ class AgenteControlador:
                     "passos_executados": passo,
                     "historico": self.historico_mensagens,
                 }
-
+                #estrutura da solicitacao
                 argumentos = acao.get("args", {})
                 solicitacao = SolicitaBusca(
                     algoritmo = argumentos.get("algoritmo"),
