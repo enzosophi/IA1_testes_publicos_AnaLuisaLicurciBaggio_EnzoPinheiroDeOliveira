@@ -50,7 +50,7 @@ def valida_mapa(caminho_mapa: str) -> Tuple[bool, str,list[str]]:
     if qtd_inicio != 1:
         return False, f"o mapa precisa ter exatamente um S (encontrados{qtd_inicio})",[]
     if qtd_objetivo != 1:
-        return False, f"o mapa precisa ter exatamente um G (encontados{qtd_objetivod})",[]
+        return False, f"o mapa precisa ter exatamente um G (encontados{qtd_objetivo})",[]
     #retorna true a representacao da grade
     return True, "", linhas
 
@@ -62,7 +62,7 @@ class PoliticaHarness:
     @classmethod
     def autorizar(cls, solicitacao: SolicitaBusca) -> Tuple[bool, str]:
         #allowlist verificacao
-        if not is isinstance(solicitacao.algoritmo, str) or solicitacao.algoritmo not in cls.algoritmos_permitidos:
+        if not isinstance(solicitacao.algoritmo, str) or solicitacao.algoritmo not in cls.algoritmos_permitidos:
             return False, f"Algoritmo '{solicitacao.algoritmo}' nao esta na lista de algoritmos autorizados"
         #heuristica validação
         if solicitacao.algoritmo in {"greedy", "astar", "beam"}:
@@ -76,30 +76,33 @@ class PoliticaHarness:
                 not isinstance(solicitacao.heuristica, str)
                 or solicitacao.heuristica not in cls.heuristicas_permitidas
             ):
-            return False f"heuristica desconhecida: '{solicitacao.heuristica}'"
+                return False, f"heuristica desconhecida: '{solicitacao.heuristica}'"
+
         #beam search
         if solicitacao.algoritmo == "beam":
             if(
                 solicitacao.largura_feixe is None
-                or is isinstance(solicitacao.largura_feixe, bool)
+                or isinstance(solicitacao.largura_feixe, bool)
                 or not isinstance(solicitacao.largura_feixe, int)
                 or solicitacao.largura_feixe <= 0
             ):
                 return False, f"a largura do feixe é invalida '{solicitacao.largura_feixe}'"
+
         #validar orcamentos e limites
         if(
-            is isinstance(solicitacao.max_expansoes, bool)
-            or not is isinstance (solicitacao.max_expansoes, int)
+            isinstance(solicitacao.max_expansoes, bool)
+            or not isinstance (solicitacao.max_expansoes, int)
             or solicitacao.max_expansoes <= 0
         ):
-        return False, f"Orcamento do maximo de expansoes invalido: {solicitacao.max_expansoes}"
+            return False, f"Orcamento do maximo de expansoes invalido: {solicitacao.max_expansoes}"
 
         if(
             isinstance(solicitacao.tempo_limite_ms, bool)
             or not isinstance(solicitacao.tempo_limite_ms, (int, float))
             or solicitacao.tempo_limite_ms <= 0
         ):
-        return False, f"orcamento do tempo limite invalido: {solicitacao.tempo_limite_ms}"
+            return False, f"orcamento do tempo limite invalido: {solicitacao.tempo_limite_ms}"
+
         #validar mapa
         mapa_valido, motivo_mapa, _ = valida_mapa(solicitacao.id_mapa)
         if not mapa_valido:
