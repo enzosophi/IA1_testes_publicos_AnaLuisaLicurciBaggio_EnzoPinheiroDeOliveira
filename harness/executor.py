@@ -37,7 +37,7 @@ class SearchHarness:
 
         permitido, motivo_autorizacao = self.autorizar(solicitacao)
         if not permitido:
-            resultado_negado = ResultadoBusca{
+            resultado_negado = ResultadoBusca(
                 status="DENY",
                 found=False,
                 path=[],
@@ -47,10 +47,10 @@ class SearchHarness:
                 max_frontier_size=0,
                 execution_time_ms=0.0,
                 reason=motivo_autorizacao,
-            }
+            )
 
             self.auditoria.registrar(
-                solicitacao-asdict(solicitacao),
+                solicitacao=asdict(solicitacao),
                 status_decisao="DENY",
                 motivo=motivo_autorizacao,
                 resultado_busca=asdict(resultado_negado),
@@ -118,11 +118,11 @@ class SearchHarness:
                     grade, caminho, custo
                 )
                 if not caminho_valido:
-                status_final = "ERROR"
-                motivo_final = f"falaha na validacao do caminho: {motivo_validacao}"
-                encontrou = False
-                caminho = []
-                custo = 0.0
+                    status_final = "ERROR"
+                    motivo_final = f"falaha na validacao do caminho: {motivo_validacao}"
+                    encontrou = False
+                    caminho = []
+                    custo = 0.0
 
             resultado = ResultadoBusca(
                 status=status_final,
