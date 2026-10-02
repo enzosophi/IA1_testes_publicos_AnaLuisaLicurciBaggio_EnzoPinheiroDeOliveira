@@ -74,7 +74,7 @@ def valida_mapa(caminho_mapa: str) -> Tuple[bool, str, list[str]]:
 # vai ser o responsavel por gerenciar a autorizacao e as permissoes do harness
 class PoliticaHarness:
     algoritmos_permitidos = {"bfs", "ucs", "greedy", "astar", "dfs", "beam"}
-    heuristicas_permitidas = {"zero", "manhattan", "manhattan_x2"}
+    heuristicas_permitidas = {None, "0", "h0", "manhattan", "manhattan_x2"}
 
     @classmethod
     def autorizar(cls, solicitacao: SolicitaBusca) -> Tuple[bool, str]:

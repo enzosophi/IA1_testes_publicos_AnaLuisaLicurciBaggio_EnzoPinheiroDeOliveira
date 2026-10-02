@@ -1,0 +1,7 @@
+metodo_variante,algoritmo,map_id,status,found,path_cost,expanded_nodes,generated_nodes,max_frontier_size,reason
+bfs,bfs,tests_publicos\maps\P01.txt,ALLOW,True,1.0,2,2,1,Busca finalizada
+bfs,bfs,tests_publicos\maps\P02.txt,ALLOW,True,2.0,3,3,1,Busca finalizada
+bfs,bfs,tests_publicos\maps\P03.txt,ALLOW,False,0.0,1,1,1,Busca finalizada
+bfs,bfs,tests_publicos\maps\P04.txt,ALLOW,True,10.0,5,6,2,Busca finalizada
+bfs,bfs,tests_publicos\maps\P05.txt,ALLOW,True,4.0,8,8,2,Busca finalizada
+bfs,bfs,tests_publicos\maps\P06.txt,ALLOW,True,6.0,12,12,2,Busca finalizada
