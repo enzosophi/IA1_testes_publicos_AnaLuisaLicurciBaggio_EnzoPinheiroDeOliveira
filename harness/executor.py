@@ -58,7 +58,7 @@ class SearchHarness:
             )
             return resultado_negado
         #carrega e valida o arquivo mapa
-        valido, motivo_mapa, grade = validar_mapa(solicitacao.id_mapa)
+        valido, motivo_mapa, grade = valida_mapa(solicitacao.id_mapa)
         if not valido:
             resultado_erro_mapa = ResultadoBusca(
                 status="DENY",
