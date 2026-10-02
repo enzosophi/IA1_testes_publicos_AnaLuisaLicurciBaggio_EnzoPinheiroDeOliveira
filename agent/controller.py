@@ -36,9 +36,9 @@ class AgenteControlador:
                 }
         return {"tipo": "final", "motivo": "todas as buscas foram executadas"}
 
-    def executar_loop{
+    def executar_loop(
         self, id_mapa: str, algoritmos_plano: List[str], max_passos: int = 10
-    } -> Dict[str, Any]:
+    ) -> Dict[str, Any]:
         for passo in range(max_passos):
             acao = self.decidir_proxima_acao(id_mapa, algoritmos_plano)
 
@@ -50,7 +50,7 @@ class AgenteControlador:
                 }
 
                 argumentos = acao.get("args", {})
-                solicitacao = SolicitaBusca{
+                solicitacao = SolicitaBusca(
                     algoritmo = argumentos.get("algoritmo"),
                     id_mapa=argumentos.get("id_mapa"),
                     heuristica=argumentos.get("heuristica"),
@@ -58,7 +58,7 @@ class AgenteControlador:
                     max_expansoes=argumentos.get("max_expansoes", 10_000),
                     max_tamanho_fronteira=argumentos.get("max_tamanho_fronteira", 20_000),
                     tempo_limite_ms=argumentos.get("tempo_limite_ms", 2_000.0),
-                }
+                )
 
                 observacao_resultado = self.harness.executar(solicitacao)
                 conteudo_observacao = {
