@@ -46,8 +46,8 @@ class ValidadorResultado:
 
                 #a primeira cordenada corresponde ao ponto de inicio S?
                 r_inicio, c_inicio = caminho_formatado[0]
-                if grade[r_inicio][c_inicio] != "S"
-                return False, "o caminho nao começa na posição inicial 'S'"
+                if grade[r_inicio][c_inicio] != "S":
+                    return False, "o caminho nao começa na posição inicial 'S'"
 
                 #a ultima coordenada corresponde ao objetivo G?
                 r_fim, c_fim = caminho_formatado[-1]
