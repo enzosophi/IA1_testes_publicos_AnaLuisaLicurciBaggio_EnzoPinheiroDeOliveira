@@ -94,4 +94,12 @@ class SearchHarness:
             )
             return resultado_ausente
 
-            
+        try:
+            resposta_busca = funcao_algoritmo{
+                grade=grade,
+                heuristica=solicitacao.heuristica,
+                largura_feixe=solicitacao.largura_feixe,
+                max_expansoes=solicitacao.max_expansoes,
+                max_tamanho_fronteira=solicitacao.max_tamanho_fronteira,
+                tempo_limite_ms=solicitacao.tempo_limite_ms,
+            }
