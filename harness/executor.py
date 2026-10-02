@@ -6,9 +6,10 @@ from harness.audit import HarnessAuditoria
 from harness.policy import PoliticaHarness, SolicitaBusca, valida_mapa
 from harness.validator import ValidadorResultado
 
+
 @dataclass
 class ResultadoBusca:
-    #contrato retornado pelo harness
+    # contrato retornado pelo harness
     status: str
     found: bool
     path: List[Any]
@@ -16,28 +17,33 @@ class ResultadoBusca:
     expanded_nodes: int
     generated_nodes: int
     max_frontier_size: int
-    execution_time_ms:float
+    execution_time_ms: float
     reason: str = ""
 
+
 class SearchHarness:
-    #vai orquestar autorizacao, execucao, limites e auditoria do harness
+    # vai orquestar autorizacao, execucao, limites e auditoria do harness
     def __init__(self, catalogo_busca: Optional[Dict[str, Any]] = None) -> None:
         self.politica = PoliticaHarness()
         self.validador = ValidadorResultado()
         self.auditoria = HarnessAuditoria()
         self.catalogo_busca = catalogo_busca or {}
-    #vai registrar uma funcao de busca
+
+    # vai registrar uma funcao de busca
     def registrar_algoritmo(self, nome: str, funcao_busca: Any) -> None:
-        self.catalogo_busca[nome]= funcao_busca
-    #vai aplicar a autorizacao e a solicitacao
+        self.catalogo_busca[nome] = funcao_busca
+
+    # vai aplicar a autorizacao e a solicitacao
     def autorizar(self, solicitacao: SolicitaBusca) -> Tuple[bool, str]:
         return self.politica.autorizar(solicitacao)
-    #vai autorizar, executar, validar e auditar o fluxo do harness
+
+    # vai autorizar, executar, validar e auditar o fluxo do harness
     def executar(self, solicitacao: SolicitaBusca) -> ResultadoBusca:
         inicio_tempo = time.perf_counter()
 
         permitido, motivo_autorizacao = self.autorizar(solicitacao)
         if not permitido:
+            print(f"DEBUG: Negado na autorização! Motivo: {motivo_autorizacao}")
             resultado_negado = ResultadoBusca(
                 status="DENY",
                 found=False,
@@ -49,7 +55,7 @@ class SearchHarness:
                 execution_time_ms=0.0,
                 reason=motivo_autorizacao,
             )
-            #registra a recusa no processo da auditoria e retorna deny
+            # registra a recusa no processo da auditoria e retorna deny
             self.auditoria.registrar(
                 solicitacao=asdict(solicitacao),
                 status_decisao="DENY",
@@ -57,9 +63,10 @@ class SearchHarness:
                 resultado_busca=asdict(resultado_negado),
             )
             return resultado_negado
-        #carrega e valida o arquivo mapa
+        # carrega e valida o arquivo mapa
         valido, motivo_mapa, grade = valida_mapa(solicitacao.id_mapa)
         if not valido:
+            print(f"DEBUG: Negado no mapa! Motivo: {motivo_mapa}")
             resultado_erro_mapa = ResultadoBusca(
                 status="DENY",
                 found=False,
@@ -71,7 +78,7 @@ class SearchHarness:
                 execution_time_ms=0.0,
                 reason=motivo_mapa,
             )
-            #registro do erro - retorna deny
+            # registro do erro - retorna deny
             self.auditoria.registrar(
                 solicitacao=asdict(solicitacao),
                 status_decisao="DENY",
@@ -79,8 +86,8 @@ class SearchHarness:
                 resultado_busca=asdict(resultado_erro_mapa),
             )
             return resultado_erro_mapa
-        #localiza o algoritmo no catalogo 
-        funcao_algoritmo = self.catalogo.busca.get(solicitacao.algoritmo)
+        # localiza o algoritmo no catalogo
+        funcao_algoritmo = self.catalogo_busca.get(solicitacao.algoritmo)
         if not funcao_algoritmo:
             resultado_ausente = ResultadoBusca(
                 status="DENY",
@@ -94,7 +101,7 @@ class SearchHarness:
                 reason=f"algoritmo '{solicitacao.algoritmo}' não impplementado no catalogo",
             )
             return resultado_ausente
-        #vai tratar falhas e operações chamando a função do alg
+        # vai tratar falhas e operações chamando a função do alg
         try:
             resposta_busca = funcao_algoritmo(
                 grade=grade,
@@ -106,7 +113,7 @@ class SearchHarness:
             )
 
             fim_tempo = time.perf_counter()
-            tempo_execucao_ms = (fim_tempo - inicio_tempo)*1000.0
+            tempo_execucao_ms = (fim_tempo - inicio_tempo) * 1000.0
 
             status_final = resposta_busca.get("status", "ALLOW")
             motivo_final = resposta_busca.get("reason", "busca concluida")
@@ -136,10 +143,13 @@ class SearchHarness:
                 execution_time_ms=round(tempo_execucao_ms, 4),
                 reason=motivo_final,
             )
-        #tratamento de excecoes
+        # tratamento de excecoes
         except Exception as erro:
+            import traceback
+
+            traceback.print_exc()
             fim_tempo = time.perf_counter()
-            tempo_execucao_ms = (fim_tempo - inicio_tempo)*1000.0
+            tempo_execucao_ms = (fim_tempo - inicio_tempo) * 1000.0
             resultado = ResultadoBusca(
                 status="ERROR",
                 found=False,
@@ -155,8 +165,8 @@ class SearchHarness:
         self.auditoria.registrar(
             solicitacao=asdict(solicitacao),
             status_decisao=resultado.status,
-            motivo= resultado.reason,
-            resultado_busca = asdict(resultado),
+            motivo=resultado.reason,
+            resultado_busca=asdict(resultado),
         )
 
         return resultado
