@@ -11,14 +11,14 @@ class AgenteControlador:
         self, id_mapa: str, algoritmos_para_testar: List[str]
     ) -> Dict[str, Any]:
     #com base no historico de tentatuvas vai deicdir qual sera a prxima ação
-        algoritnos_testados = {
+        algoritmos_testados = {
             msg["content"].get("algoritmo_solicitado")
             for msg in self.historico_mensagens
             if "content" in msg and isinstance(msg["content"], dict)
         }
         #escolhe o prox algoritmo da lista com as opções que ainda nao foram testadas
         for alg in algoritmos_para_testar:
-            if alg not in algoritnos_testados:
+            if alg not in algoritmos_testados:
                 heuristica = "manhattan" if alg in {"greedy", "astar", "beam"} else None
                 largura_feixe = 5 if alg == "beam" else None
 
