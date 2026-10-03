@@ -9,7 +9,7 @@
 ---
 
 ## 1. Ferramentas Utilizadas
-* **Google Gemini / Claude:** Utilizados como assistentes de desenvolvimento, depuração de código, estruturação de scripts de automação experimental e revisão teórica das respostas do questionário.
+* **Google Gemini flash + raciocinio complexo / Claude sonnet 5.5 Médio:** Utilizados como assistentes de desenvolvimento, depuração de código, estruturação de scripts de automação experimental e revisão teórica das respostas do questionário.
 
 ---
 
